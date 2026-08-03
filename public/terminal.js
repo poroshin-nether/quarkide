@@ -37,8 +37,16 @@ function createTermPanel(id) {
     theme: currentXtermTheme || { background: '#1e1e1e', foreground: '#d4d4d4', cursor: '#d4d4d4' },
     cursorBlink: true,
   });
-
   term.loadAddon(fitAddon);
+
+  // Container must be visible (and laid out) before term.open() measures it —
+  // opening into a display:none ancestor gives xterm zero-size cell metrics
+  // that a later fit() doesn't fully recover from until the next real render.
+  const entry = { id, term, fitAddon, el: div };
+  terminals.push(entry);
+  syncTermVisibility();
+  div.style.display = 'block';
+
   term.open(div);
   term.onData((data) => wsSend({ type: 'input', id, data }));
   term.onResize(({ cols, rows }) => wsSend({ type: 'resize', id, cols, rows }));
@@ -65,9 +73,6 @@ function createTermPanel(id) {
     div.addEventListener('touchcancel', () => { dragging = false; });
   }
 
-  const entry = { id, term, fitAddon, el: div };
-  terminals.push(entry);
-  syncTermVisibility();
   switchTerm(entry);
   return entry;
 }

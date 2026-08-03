@@ -2,7 +2,7 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
-const { ROOT, PASSWORD } = require('./config');
+const { ROOT, PASSWORD, IS_WIN } = require('./config');
 const { make_token, check_auth, delete_token } = require('./auth');
 const { kill_by_token } = require('./shell');
 const { stream_zip } = require('./zip');
@@ -45,6 +45,7 @@ function handle_api(req, res) {
 
   const abs = path.resolve(parsed.searchParams.get('path') || ROOT);
 
+  if (p == '/api/drives') return handle_drives(res);
   if (p == '/api/ls') return handle_ls(abs, res);
   if (p == '/api/read') return handle_read(abs, res);
   if (p == '/api/download') return handle_download(abs, res);
@@ -66,6 +67,14 @@ async function handle_login(req, res) {
     console.log(`[auth] ${ip} - login failed`);
     fail(res, 'denied', 401);
   }
+}
+
+async function handle_drives(res) {
+  if (!IS_WIN) return ok(res, { drives: [] });
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const checks = await Promise.allSettled(letters.map((l) => fs.stat(`${l}:\\`)));
+  const drives = letters.filter((_, i) => checks[i].status === 'fulfilled').map((l) => `${l}:\\`);
+  ok(res, { drives });
 }
 
 async function handle_ls(abs, res) {

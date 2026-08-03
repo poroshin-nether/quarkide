@@ -41,11 +41,11 @@ function unwatch_dir(conn) {
 
 const connections = new Map();
 
-function create_shell(conn, id, cwd) {
+function create_shell(conn, id, cwd, cols, rows) {
   const shell = pty.spawn(IS_WIN ? 'cmd.exe' : '/bin/bash', [], {
     name: 'xterm-256color',
-    cols: 120,
-    rows: 30,
+    cols: cols || 120,
+    rows: rows || 30,
     cwd: cwd || ROOT,
     env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
     useConpty: true,
@@ -82,6 +82,7 @@ function kill_shell(conn, id) {
   const entry = conn.shells.get(id);
   if (!entry) return;
   conn.shells.delete(id);
+  if (!entry.shell) return;
   if (IS_WIN) {
     try { require('child_process').execSync(`taskkill /PID ${entry.shell.pid} /T /F`, { stdio: 'ignore' }); } catch {}
   } else {
@@ -111,8 +112,11 @@ function handle_message(conn, ws, msg) {
   }
 
   if (msg.type == 'new-shell') {
+    // Spawn is deferred to the first resize (see below) so the PTY starts
+    // out at the client's real panel size instead of a guessed default —
+    // avoids a window where shell and client disagree on terminal width.
     const id = conn.nextId++;
-    create_shell(conn, id, safe_cwd(msg.cwd));
+    conn.shells.set(id, { pending: true, cwd: safe_cwd(msg.cwd) });
     ws.send(JSON.stringify({ type: 'shell-created', id }));
     return;
   }
@@ -127,11 +131,15 @@ function handle_message(conn, ws, msg) {
   if (!entry) return;
 
   if (msg.type == 'input') {
-    entry.shell.write(msg.data);
+    if (entry.shell) entry.shell.write(msg.data);
   } else if (msg.type == 'resize') {
-    entry.mute = true;
-    entry.shell.resize(msg.cols, msg.rows);
-    setTimeout(() => { entry.mute = false; }, 50);
+    if (entry.pending) {
+      create_shell(conn, msg.id, entry.cwd, msg.cols, msg.rows);
+    } else {
+      entry.mute = true;
+      entry.shell.resize(msg.cols, msg.rows);
+      setTimeout(() => { entry.mute = false; }, 50);
+    }
   }
 }
 

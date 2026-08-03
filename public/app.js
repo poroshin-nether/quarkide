@@ -1,11 +1,30 @@
 // --- File Tree ---
 const treeEl = $('tree');
 const currentPathEl = $('current-path');
+const driveSelectEl = $('drive-select');
+
+async function initDrives() {
+  const res = await authFetch('/api/drives');
+  const data = await res.json();
+  if (data.drives.length < 2) return;
+  driveSelectEl.innerHTML = data.drives.map(d => '<option value="' + d + '">' + d.slice(0, 2) + '</option>').join('');
+  driveSelectEl.style.display = '';
+  on(driveSelectEl, 'change', () => loadDir(driveSelectEl.value));
+  syncDriveSelect(currentPathEl.textContent);
+}
+
+// Path text stays plain, selectable/copyable. The select is icon-only (its
+// own text is transparent) — clicking it just opens the drive list.
+function syncDriveSelect(dirPath) {
+  const drive = /^[A-Za-z]:\\/.exec(dirPath);
+  if (drive) driveSelectEl.value = drive[0];
+}
 
 async function loadDir(dirPath) {
   const res = await authFetch('/api/ls?path=' + encodeURIComponent(dirPath));
   const data = await res.json();
   currentPathEl.textContent = data.path;
+  syncDriveSelect(data.path);
   treeEl.innerHTML = '';
   saveSession();
   wsSend({ type: 'watch-dir', path: data.path });
@@ -100,6 +119,8 @@ async function bootAuthed() {
 
   if (!appInited) {
     appInited = true;
+
+    initDrives();
 
     on(treeEl, 'contextmenu', openTreeContextMenu);
     on($('terminal'), 'contextmenu', (e) => e.preventDefault());
