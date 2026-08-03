@@ -1,0 +1,37 @@
+{
+  "name": "quarkide",
+  "version": "0.1.1",
+  "description": "Terminal, file manager, and a full code editor — compiled into one binary you run from anywhere.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poroshin-nether/quarkide.git"
+  },
+  "homepage": "https://quarkide.com",
+  "main": "server/main.js",
+  "bin": {
+    "quarkide": "server/main.js"
+  },
+  "scripts": {
+    "start": "node server/main.js"
+  },
+  "keywords": [
+    "terminal",
+    "editor",
+    "remote",
+    "ide",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "monaco-editor": "0.56.0",
+    "monaco-themes": "0.4.8",
+    "node-pty": "1.1.0",
+    "ws": "8.21.1"
+  },
+  "overrides": {
+    "dompurify": "3.4.12"
+  }
+}

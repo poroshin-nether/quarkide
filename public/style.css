@@ -1,0 +1,814 @@
+/* --- Fonts --- */
+@font-face { font-family: 'Consolas'; font-weight: 400; src: url('/fonts/Consolas-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Consolas'; font-weight: 700; src: url('/fonts/Consolas-Bold.ttf') format('truetype'); }
+
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url('/fonts/JetBrainsMono-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Fira Code'; font-weight: 400; src: url('/fonts/FiraCode-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Fira Code'; font-weight: 700; src: url('/fonts/FiraCode-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Cascadia Code'; font-weight: 400; src: url('/fonts/CascadiaCode-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Cascadia Code'; font-weight: 700; src: url('/fonts/CascadiaCode-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 400; src: url('/fonts/IBMPlexMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 700; src: url('/fonts/IBMPlexMono-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Source Code Pro'; font-weight: 400; src: url('/fonts/SourceCodePro-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Source Code Pro'; font-weight: 700; src: url('/fonts/SourceCodePro-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Iosevka'; font-weight: 400; src: url('/fonts/Iosevka-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Iosevka'; font-weight: 700; src: url('/fonts/Iosevka-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Geist Mono'; font-weight: 400; src: url('/fonts/GeistMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Geist Mono'; font-weight: 700; src: url('/fonts/GeistMono-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Commit Mono'; font-weight: 400; src: url('/fonts/CommitMono-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Commit Mono'; font-weight: 700; src: url('/fonts/CommitMono-Bold.ttf') format('truetype'); }
+
+@font-face { font-family: 'Monaspace Neon'; font-weight: 400; src: url('/fonts/MonaspaceNeon-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Monaspace Neon'; font-weight: 700; src: url('/fonts/MonaspaceNeon-Bold.woff2') format('woff2'); }
+
+@font-face { font-family: 'Intel One Mono'; font-weight: 400; src: url('/fonts/IntelOneMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Intel One Mono'; font-weight: 700; src: url('/fonts/IntelOneMono-Bold.woff2') format('woff2'); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Form controls should inherit typography from body/parent by default */
+input, button, select, textarea { font: inherit; color: inherit; }
+
+:root {
+  --bg: #1e1e1e;
+  --bg2: #252526;
+  --bg3: #2d2d2d;
+  --border: #333;
+  --text: #d4d4d4;
+  --text-dim: #888;
+  --accent: #569cd6;
+  --on-accent: #ffffff;
+  --status-bg: #007acc;
+  --status-fg: #ffffff;
+  --status-btn-bg: rgba(255,255,255,0.15);
+  --status-btn-bg-hover: rgba(255,255,255,0.25);
+  --font: 'Consolas', monospace;
+  --font-size: 14px;
+
+  --danger: #c72a2a;
+  --danger-hover: #e04040;
+  --success: #388a3d;
+  --success-hover: #439a46;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+}
+
+/* === UI kit: unified form controls (22px height) ========================= */
+.ui-control {
+  height: 22px;
+  font-size: 11px;
+  line-height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  outline: none;
+}
+
+.ui-btn {
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ui-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+.ui-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ui-btn.on {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+
+.ui-btn.on:hover {
+  background: var(--success-hover);
+  border-color: var(--success-hover);
+  color: #ffffff;
+}
+
+.ui-input {
+  color: var(--text);
+}
+
+.ui-input::placeholder {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ui-input:focus { border-color: var(--accent); }
+
+.ui-input[type="number"] { -moz-appearance: textfield; }
+.ui-input[type="number"]::-webkit-outer-spin-button,
+.ui-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ui-select {
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.ui-select:hover { border-color: var(--text-dim); }
+
+.ui-select option {
+  background: var(--bg2);
+  color: var(--text);
+}
+
+/* Labels: small uppercase dim */
+.ui-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+/* Close (×) button — red square. Default small (11), .lg = 22 */
+.ui-close {
+  width: 11px;
+  height: 11px;
+  font-size: 11px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  background: var(--danger);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ui-close:hover { background: var(--danger-hover); }
+.ui-close.lg { width: 22px; height: 22px; font-size: 14px; }
+
+/* Status bar compact button — dark theme–aware translucent fill */
+.ui-status-btn {
+  font-size: 11px;
+  padding: 1px 8px;
+  background: var(--status-btn-bg);
+  border: none;
+  color: var(--status-fg);
+  cursor: pointer;
+}
+.ui-status-btn:hover { background: var(--status-btn-bg-hover); }
+.ui-status-btn.toggle { background: var(--status-btn-bg); opacity: 1; }
+.ui-status-btn.toggle:hover { background: var(--status-btn-bg); }
+.ui-status-btn.toggle.active { background: rgba(76, 175, 80, 0.38); }
+.ui-status-btn.toggle.active:hover { background: rgba(76, 175, 80, 0.38); }
+.ui-status-btn.flash { animation: status-btn-flash 0.9s ease-out; }
+@keyframes status-btn-flash {
+  0%   { background: rgba(76, 175, 80, 0.75); }
+  100% { background: var(--status-btn-bg); }
+}
+
+/* Minibar — grouped toggles inside status bar, overrides the status-wide button overlap */
+.mini-bar {
+  display: inline-flex;
+  gap: 2px;
+  padding: 0 8px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+#status .mini-bar button + button { margin-left: 0; }
+#status .mini-bar + button { margin-left: 0; }
+
+/* Ghost button — no background/border, just colored text */
+.ui-ghost {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.ui-ghost:hover { color: var(--text); }
+
+/* Tab — unified base for editor tabs, terminal tabs, settings popup tabs */
+.ui-tab {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  gap: 8px;
+  border-right: 1px solid var(--border);
+  outline: none;
+}
+
+/* Shrinkable tabs with ellipsis — editor & terminal only */
+#tabs .ui-tab, #term-tabs .ui-tab {
+  flex: 1 1 0;
+  min-width: 60px;
+  max-width: 200px;
+  overflow: hidden;
+}
+
+#tabs .ui-tab .name, #term-tabs .ui-tab .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.ui-tab:hover { color: var(--text); background: var(--bg3); }
+.ui-tab.active {
+  color: var(--text);
+  background: var(--bg);
+  border-bottom: 1px solid var(--accent);
+  margin-bottom: -1px;
+}
+.ui-tab.modified .name::after { content: ' \25cf'; color: var(--accent); }
+
+/* Terminal variant: compact padding/gap */
+.ui-tab.term { padding: 6px 12px; gap: 6px; }
+
+#app-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* --- File tree --- */
+#sidebar {
+  width: 260px;
+  min-width: 200px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#sidebar-header {
+  height: 32px;
+  padding: 0 12px;
+  flex-shrink: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  gap: 8px;
+}
+
+/* #sidebar-open uses .ui-ghost; extras: right border + padding, hidden by default */
+#sidebar-open { border-right: 1px solid var(--border); padding: 0 10px; display: none; }
+#sidebar-open:hover { background: var(--bg3); }
+
+.sidebar-hidden #sidebar,
+.sidebar-hidden #v-resizer { display: none; }
+.sidebar-hidden #sidebar-open { display: flex; align-items: center; }
+
+#sidebar-header .path {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+#tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+  font-size: var(--font-size);
+}
+
+#tree::-webkit-scrollbar { width: 6px; }
+#tree::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+
+.tree-item {
+  padding: 3px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.tree-item:hover,
+.tree-item.ctx-target { background: var(--bg3); }
+.tree-item.active { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.tree-item .icon { width: 16px; text-align: center; flex-shrink: 0; }
+.tree-item.dir .icon { color: var(--accent); }
+.tree-item.file .icon { color: var(--text-dim); }
+.tree-item .name { overflow: hidden; text-overflow: ellipsis; }
+
+/* --- Settings overlay --- */
+#settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+}
+
+#settings-overlay.open { display: block; }
+
+/* --- Settings popup --- */
+#settings-popup {
+  display: none;
+  position: fixed;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  width: 520px;
+  height: 520px;
+  min-width: 380px;
+  min-height: 320px;
+  max-width: 95vw;
+  max-height: 95vh;
+  resize: both;
+  overflow: hidden;
+  font-family: 'Consolas', monospace;
+}
+
+#settings-popup::-webkit-resizer {
+  background:
+    linear-gradient(135deg, transparent 0 50%, var(--border) 50% 60%, transparent 60% 70%, var(--border) 70% 80%, transparent 80% 90%, var(--accent) 90% 100%);
+}
+
+#settings-popup *, #settings-popup *::before, #settings-popup *::after {
+  font-family: 'Consolas', monospace !important;
+}
+
+#settings-popup.open { display: flex; flex-direction: column; }
+
+#settings-popup .popup-inner {
+  margin: 12px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.settings-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 12px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text);
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.settings-group {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-group + .settings-group {
+  border-top: 1px dashed var(--border);
+}
+
+.editor-settings {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.font-settings {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+}
+
+/* font/theme selects grow to fill remaining space in their row */
+#font-select, #theme-select { flex: 1; min-width: 0; }
+
+.font-size-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Square icon-size button variant of .ui-btn (for +/− font-size controls) */
+.ui-btn.square {
+  width: 22px;
+  padding: 0;
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+#font-size-value {
+  font-size: 11px;
+  color: var(--text-dim);
+  min-width: 20px;
+  text-align: center;
+}
+
+.layout-group {
+  display: flex;
+  gap: 4px;
+}
+
+/* Layout picker: icon buttons with SVG inside — matches .ui-control height */
+.ui-btn.icon {
+  width: 30px;
+  padding: 3px;
+  background: var(--bg3);
+}
+.ui-btn.icon.active { background: var(--bg3); border-color: var(--text-dim); }
+
+.layout-icon {
+  display: block;
+  width: 16px;
+  height: 11px;
+  border: 1px solid var(--text-dim);
+}
+.layout-icon-bottom { background: linear-gradient(to bottom, var(--text-dim) 0 60%, transparent 60% 100%); }
+.layout-icon-right  { background: linear-gradient(to right,  var(--text-dim) 0 65%, transparent 65% 100%); }
+
+/* --- Main area --- */
+#main {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- Tabs --- */
+#tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 32px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+#tabs.reject, #term-tabs.reject {
+  animation: tabs-reject 0.5s ease-out;
+}
+
+@keyframes tabs-reject {
+  0%   { box-shadow: inset 0 0 0 0 rgba(224, 64, 64, 0); }
+  20%  { box-shadow: inset 0 0 20px 2px rgba(224, 64, 64, 0.55); background: rgba(199, 42, 42, 0.18); }
+  100% { box-shadow: inset 0 0 0 0 rgba(224, 64, 64, 0); }
+}
+
+#no-file {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* --- Editor --- */
+#editor-wrap {
+  flex: 1;
+  min-width: 250px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#editor {
+  flex: 1;
+  overflow: hidden;
+  display: none;
+}
+
+#editor .line-numbers { color: var(--text-dim) !important; }
+
+/* --- Content area (editor + terminal) --- */
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#main.layout-right #content {
+  flex-direction: row;
+}
+
+#main.layout-right #h-resizer {
+  width: 6px;
+  height: auto;
+  cursor: ew-resize;
+}
+
+#main.layout-right #terminal-wrap {
+  height: auto;
+  width: 400px;
+  min-width: 250px;
+  min-height: unset;
+}
+
+/* --- Resizer --- */
+#h-resizer, #v-resizer {
+  background: var(--border);
+  flex-shrink: 0;
+  touch-action: none;
+  position: relative;
+  z-index: 2;
+}
+
+#h-resizer { height: 6px; cursor: ns-resize; }
+#v-resizer { width: 6px; cursor: ew-resize; }
+
+@media (pointer: coarse) {
+  #h-resizer { height: 22px; }
+  #v-resizer { width: 22px; }
+}
+
+/* --- Terminal --- */
+#terminal-wrap {
+  height: 300px;
+  min-height: 150px;
+  background: var(--bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#term-tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  height: 32px;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+/* .term-add uses .ui-ghost; square shape + subtle default highlight, inset 1px */
+.term-add {
+  width: 30px;
+  padding: 0;
+  margin: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+}
+.term-add:hover { background: rgba(255, 255, 255, 0.1); }
+
+#terminal {
+  flex: 1;
+  padding: 6px;
+  overflow: hidden;
+}
+
+.term-panel {
+  display: none;
+  height: 100%;
+}
+
+/* --- Status bar --- */
+#status {
+  height: 22px;
+  background: var(--status-bg);
+  display: flex;
+  align-items: center;
+  padding: 0 4px 0 12px;
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+  color: var(--status-fg);
+  flex-shrink: 0;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+#status *, #status *::before, #status *::after {
+  font-family: 'Consolas', monospace !important;
+}
+
+#status button + button { margin-left: -10px; }
+
+/* --- Login (inline inside .boot) --- */
+#login-box {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 280px;
+}
+
+#login-pass {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(0,122,204,0.25);
+  color: #ccd;
+  font-family: 'Consolas', monospace;
+  font-size: 12px;
+  padding: 10px 12px;
+  letter-spacing: 3px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#login-pass::placeholder {
+  color: rgba(255,255,255,0.22);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+#login-pass:focus {
+  border-color: rgba(0,122,204,0.55);
+  box-shadow: 0 0 8px rgba(0,122,204,0.25);
+}
+
+#login-btn {
+  background: rgba(0,122,204,0.08);
+  border: 1px solid rgba(0,122,204,0.35);
+  color: #007acc;
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#login-btn:hover {
+  background: rgba(0,122,204,0.15);
+  box-shadow: 0 0 10px rgba(0,122,204,0.3);
+}
+
+#login-btn:active {
+  background: rgba(0,122,204,0.22);
+}
+
+#login-error {
+  display: none;
+  margin-top: 14px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #c44;
+}
+
+#app { display: none; flex: 1; overflow: hidden; position: relative; flex-direction: column; }
+
+/* --- Splash --- */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #050508;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+  overflow: hidden;
+}
+
+/* Boot screen */
+.boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  font-family: 'Consolas', monospace;
+}
+
+.boot-logo {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #ccd;
+  text-transform: uppercase;
+}
+
+.boot-logo span {
+  color: #007acc;
+  text-shadow: 0 0 16px rgba(0,122,204,0.6);
+}
+
+.boot-sub {
+  font-size: 10px;
+  color: rgba(0,122,204,0.45);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 6px;
+  margin-bottom: 22px;
+}
+
+
+/* --- Context Menu --- */
+#context-menu {
+  display: none;
+  position: fixed;
+  z-index: 3;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+}
+
+#context-menu .ctx-item {
+  padding: 5px 12px 5px 8px;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#context-menu .ctx-item + .ctx-item {
+  border-top: 1px dashed var(--border);
+}
+
+#context-menu .ctx-item:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+#context-menu .ctx-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+#context-menu .ctx-item:hover .ctx-icon { opacity: 1; }
+
+#context-menu .ctx-item.danger { color: var(--danger-hover); }
+#context-menu .ctx-item.danger:hover { background: var(--danger); color: #fff; }
+
+#logout:hover {
+  background: var(--danger);
+  color: #fff;
+}
