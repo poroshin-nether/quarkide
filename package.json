@@ -1,6 +1,6 @@
 {
   "name": "quarkide",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Terminal, file manager, and a full code editor — compiled into one binary you run from anywhere.",
   "repository": {
     "type": "git",
@@ -11,6 +11,11 @@
   "bin": {
     "quarkide": "server/main.js"
   },
+  "files": [
+    "server",
+    "public",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node server/main.js"
   },
