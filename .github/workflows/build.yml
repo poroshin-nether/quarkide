@@ -17,9 +17,6 @@ jobs:
           - os: macos-latest
             asset: quarkide-macos-arm64
             built: dist/quarkide
-          - os: macos-13
-            asset: quarkide-macos-x64
-            built: dist/quarkide
 
     runs-on: ${{ matrix.os }}
     steps:
