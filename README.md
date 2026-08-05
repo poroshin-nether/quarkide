@@ -21,7 +21,7 @@ winget install quarkide
 
 **macos**
 ```bash
-brew install quarkide
+brew install poroshin-nether/quarkide/quarkide
 ```
 
 **download**
