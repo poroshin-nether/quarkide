@@ -2,7 +2,7 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
-const { ROOT, PASSWORD, IS_WIN } = require('./config');
+const { ROOT, PASSWORD, IS_WIN } = require('./cli');
 const { make_token, check_auth, delete_token } = require('./auth');
 const { kill_by_token } = require('./shell');
 const { stream_zip } = require('./zip');

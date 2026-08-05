@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const http = require('http');
 const os = require('os');
-const { PORT, IS_WIN } = require('./config');
+const { PORT, IS_WIN } = require('./cli');
 const { handle_api } = require('./api');
 const { serve_static } = require('./static');
 const { attach, kill_all } = require('./shell');

@@ -1,0 +1,93 @@
+// Builds a single-file binary: node.exe + all app files embedded as SEA
+// assets, extracted to a temp dir and required from there on first run.
+// No bundler — the extracted tree is just real files, existing require()
+// resolution (server/, node_modules/) works completely unchanged.
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const ROOT = path.join(__dirname, '..');
+const DIST = path.join(ROOT, 'dist');
+const pkg = require(path.join(ROOT, 'package.json'));
+
+const SKIP_DIRS = new Set(['.bin']);
+
+function collect(dir, base, out) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isSymbolicLink()) continue;
+    if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) continue;
+    const abs = path.join(dir, entry.name);
+    const rel = base + '/' + entry.name;
+    if (entry.isDirectory()) collect(abs, rel, out);
+    else if (entry.isFile()) out.push({ abs, rel });
+  }
+}
+
+const files = [];
+collect(path.join(ROOT, 'server'), 'server', files);
+collect(path.join(ROOT, 'public'), 'public', files);
+collect(path.join(ROOT, 'node_modules'), 'node_modules', files);
+console.log(`[build-sea] embedding ${files.length} files`);
+
+fs.rmSync(DIST, { recursive: true, force: true });
+fs.mkdirSync(DIST, { recursive: true });
+
+const manifestPath = path.join(DIST, 'manifest.json');
+fs.writeFileSync(manifestPath, JSON.stringify(files.map((f) => f.rel)));
+
+const assets = { 'manifest.json': manifestPath };
+for (const f of files) assets[f.rel] = f.abs;
+
+const entryPath = path.join(DIST, 'sea-entry.js');
+fs.writeFileSync(entryPath, `
+const sea = require('node:sea');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const { createRequire } = require('node:module');
+
+const extractDir = path.join(os.tmpdir(), 'quarkide-${pkg.version}');
+const marker = path.join(extractDir, '.extracted');
+
+if (!fs.existsSync(marker)) {
+  const manifest = JSON.parse(Buffer.from(sea.getAsset('manifest.json')).toString('utf8'));
+  for (const rel of manifest) {
+    const dest = path.join(extractDir, ...rel.split('/'));
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.writeFileSync(dest, Buffer.from(sea.getAsset(rel)));
+  }
+  fs.writeFileSync(marker, '');
+}
+
+const mainPath = path.join(extractDir, 'server', 'main.js');
+createRequire(mainPath)(mainPath);
+`.trimStart());
+
+const seaConfigPath = path.join(DIST, 'sea-config.json');
+fs.writeFileSync(seaConfigPath, JSON.stringify({
+  main: entryPath,
+  output: path.join(DIST, 'sea-blob.blob'),
+  assets,
+}, null, 2));
+
+console.log('[build-sea] node --experimental-sea-config ...');
+execSync(`node --experimental-sea-config "${seaConfigPath}"`, { stdio: 'inherit' });
+
+const outName = process.platform === 'win32' ? 'quarkide.exe' : 'quarkide';
+const outPath = path.join(DIST, outName);
+fs.copyFileSync(process.execPath, outPath);
+
+if (process.platform === 'win32') {
+  try { execSync(`signtool remove /s "${outPath}"`, { stdio: 'ignore' }); } catch {}
+}
+
+console.log('[build-sea] postject ...');
+const postject = path.join(ROOT, 'node_modules', '.bin', process.platform === 'win32' ? 'postject.cmd' : 'postject');
+const sentinel = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
+execSync(
+  `"${postject}" "${outPath}" NODE_SEA_BLOB "${path.join(DIST, 'sea-blob.blob')}" --sentinel-fuse ${sentinel}` +
+  (process.platform === 'win32' ? ' --overwrite' : ''),
+  { stdio: 'inherit' }
+);
+
+console.log('[build-sea] done:', outPath);

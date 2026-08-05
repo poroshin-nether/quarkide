@@ -1,6 +1,6 @@
 {
   "name": "quarkide",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Terminal, file manager, and a full code editor — compiled into one binary you run from anywhere.",
   "repository": {
     "type": "git",
@@ -33,5 +33,8 @@
   },
   "overrides": {
     "dompurify": "3.4.12"
+  },
+  "devDependencies": {
+    "postject": "1.0.0-alpha.6"
   }
 }

@@ -1,0 +1,43 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            asset: quarkide-windows-x64.exe
+            built: dist/quarkide.exe
+          - os: ubuntu-latest
+            asset: quarkide-linux-x64
+            built: dist/quarkide
+          - os: macos-latest
+            asset: quarkide-macos-arm64
+            built: dist/quarkide
+          - os: macos-13
+            asset: quarkide-macos-x64
+            built: dist/quarkide
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+
+      - run: node scripts/build-sea.js
+
+      - name: rename to release asset name
+        shell: bash
+        run: cp "${{ matrix.built }}" "${{ matrix.asset }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}

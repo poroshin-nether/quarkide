@@ -2,7 +2,7 @@
 const fs = require('fs');
 const pty = require('node-pty');
 const { WebSocketServer } = require('ws');
-const { IS_WIN, ROOT, SCROLLBACK_SIZE } = require('./config');
+const { IS_WIN, ROOT, SCROLLBACK_SIZE } = require('./cli');
 const { check_auth } = require('./auth');
 
 function safe_cwd(requested) {

@@ -45,17 +45,16 @@ Open `http://<host-ip>:1980`.
 ## CLI
 
 ```bash
-node server/main.js [-p <port>] [-a <password>] [-c <config>]
+node server/main.js [-p <port>] [-a <password>]
 ```
 
 | Flag | Long form | Default | Description |
 |---|---|---|---|
 | `-p` | `--port` | `1980` | Port to listen on |
-| `-a` | `--auth` | *auto-generated on first run* | Access password |
-| `-c` | `--config` | `quarkide.json` next to the project | Path to a config file or directory |
+| `-a` | `--auth` | generated fresh each run and printed once | Access password |
 | `-v` | `--version` | — | Print version and exit |
 
-First run with no password saved anywhere generates one and prints it once. If you pass `-a` explicitly, it overwrites whatever password is already saved in the config file, automatically.
+Without `-a`, a password is generated fresh and printed once each run; pass `-a` yourself for a stable one. For a service that restarts (systemd, Task Scheduler, etc.), bake `-a`/`-p` into that service's own start command.
 
 ## License
 
