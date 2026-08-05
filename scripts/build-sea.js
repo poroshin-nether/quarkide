@@ -23,7 +23,7 @@ function collect(dir, base, out) {
   }
 }
 
-const files = [];
+const files = [{ abs: path.join(ROOT, 'package.json'), rel: 'package.json' }];
 collect(path.join(ROOT, 'server'), 'server', files);
 collect(path.join(ROOT, 'public'), 'public', files);
 collect(path.join(ROOT, 'node_modules'), 'node_modules', files);
