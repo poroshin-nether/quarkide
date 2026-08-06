@@ -1,4 +1,3 @@
-/* --- Fonts --- */
 @font-face { font-family: 'Consolas'; font-weight: 400; src: url('/fonts/Consolas-Regular.ttf') format('truetype'); }
 @font-face { font-family: 'Consolas'; font-weight: 700; src: url('/fonts/Consolas-Bold.ttf') format('truetype'); }
 
@@ -34,7 +33,6 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Form controls should inherit typography from body/parent by default */
 input, button, select, textarea { font: inherit; color: inherit; }
 
 :root {
@@ -68,7 +66,6 @@ body {
   display: flex;
 }
 
-/* === UI kit: unified form controls (22px height) ========================= */
 .ui-control {
   height: 22px;
   font-size: 11px;
@@ -142,7 +139,6 @@ body {
   color: var(--text);
 }
 
-/* Labels: small uppercase dim */
 .ui-label {
   font-size: 10px;
   text-transform: uppercase;
@@ -150,7 +146,6 @@ body {
   color: var(--text-dim);
 }
 
-/* Close (×) button — red square. Default small (11), .lg = 22 */
 .ui-close {
   width: 11px;
   height: 11px;
@@ -169,7 +164,6 @@ body {
 .ui-close:hover { background: var(--danger-hover); }
 .ui-close.lg { width: 22px; height: 22px; font-size: 14px; }
 
-/* Status bar compact button — dark theme–aware translucent fill */
 .ui-status-btn {
   font-size: 11px;
   padding: 1px 8px;
@@ -189,7 +183,6 @@ body {
   100% { background: var(--status-btn-bg); }
 }
 
-/* Minibar — grouped toggles inside status bar, overrides the status-wide button overlap */
 .mini-bar {
   display: inline-flex;
   gap: 2px;
@@ -200,7 +193,6 @@ body {
 #status .mini-bar button + button { margin-left: 0; }
 #status .mini-bar + button { margin-left: 0; }
 
-/* Ghost button — no background/border, just colored text */
 .ui-ghost {
   background: none;
   border: none;
@@ -212,7 +204,6 @@ body {
 }
 .ui-ghost:hover { color: var(--text); }
 
-/* Tab — unified base for editor tabs, terminal tabs, settings popup tabs */
 .ui-tab {
   display: flex;
   align-items: center;
@@ -227,7 +218,6 @@ body {
   outline: none;
 }
 
-/* Shrinkable tabs with ellipsis — editor & terminal only */
 #tabs .ui-tab, #term-tabs .ui-tab {
   flex: 1 1 0;
   min-width: 60px;
@@ -250,7 +240,6 @@ body {
 }
 .ui-tab.modified .name::after { content: ' \25cf'; color: var(--accent); }
 
-/* Terminal variant: compact padding/gap */
 .ui-tab.term { padding: 6px 12px; gap: 6px; }
 
 #app-body {
@@ -260,7 +249,6 @@ body {
   min-height: 0;
 }
 
-/* --- File tree --- */
 #sidebar {
   width: 260px;
   min-width: 200px;
@@ -287,7 +275,6 @@ body {
   gap: 8px;
 }
 
-/* #sidebar-open uses .ui-ghost; extras: right border + padding, hidden by default */
 #sidebar-open { border-right: 1px solid var(--border); padding: 0 10px; display: none; }
 #sidebar-open:hover { background: var(--bg3); }
 
@@ -353,7 +340,6 @@ body {
 .tree-item.file .icon { color: var(--text-dim); }
 .tree-item .name { overflow: hidden; text-overflow: ellipsis; }
 
-/* --- Settings overlay --- */
 #settings-overlay {
   display: none;
   position: fixed;
@@ -363,7 +349,6 @@ body {
 
 #settings-overlay.open { display: block; }
 
-/* --- Settings popup --- */
 #settings-popup {
   display: none;
   position: fixed;
@@ -447,7 +432,6 @@ body {
   align-items: center;
 }
 
-/* font/theme selects grow to fill remaining space in their row */
 #font-select, #theme-select { flex: 1; min-width: 0; }
 
 .font-size-group {
@@ -456,7 +440,6 @@ body {
   gap: 2px;
 }
 
-/* Square icon-size button variant of .ui-btn (for +/− font-size controls) */
 .ui-btn.square {
   width: 22px;
   padding: 0;
@@ -477,7 +460,6 @@ body {
   gap: 4px;
 }
 
-/* Layout picker: icon buttons with SVG inside — matches .ui-control height */
 .ui-btn.icon {
   width: 30px;
   padding: 3px;
@@ -494,7 +476,6 @@ body {
 .layout-icon-bottom { background: linear-gradient(to bottom, var(--text-dim) 0 60%, transparent 60% 100%); }
 .layout-icon-right  { background: linear-gradient(to right,  var(--text-dim) 0 65%, transparent 65% 100%); }
 
-/* --- Main area --- */
 #main {
   flex: 1;
   min-width: 300px;
@@ -503,7 +484,6 @@ body {
   overflow: hidden;
 }
 
-/* --- Tabs --- */
 #tabs {
   display: flex;
   background: var(--bg2);
@@ -535,7 +515,6 @@ body {
   font-size: 14px;
 }
 
-/* --- Editor --- */
 #editor-wrap {
   flex: 1;
   min-width: 250px;
@@ -553,7 +532,6 @@ body {
 
 #editor .line-numbers { color: var(--text-dim) !important; }
 
-/* --- Content area (editor + terminal) --- */
 #content {
   flex: 1;
   display: flex;
@@ -578,7 +556,6 @@ body {
   min-height: unset;
 }
 
-/* --- Resizer --- */
 #h-resizer, #v-resizer {
   background: var(--border);
   flex-shrink: 0;
@@ -595,7 +572,6 @@ body {
   #v-resizer { width: 22px; }
 }
 
-/* --- Terminal --- */
 #terminal-wrap {
   height: 300px;
   min-height: 150px;
@@ -617,7 +593,6 @@ body {
   z-index: 2;
 }
 
-/* .term-add uses .ui-ghost; square shape + subtle default highlight, inset 1px */
 .term-add {
   width: 30px;
   padding: 0;
@@ -640,7 +615,6 @@ body {
   height: 100%;
 }
 
-/* --- Status bar --- */
 #status {
   height: 22px;
   background: var(--status-bg);
@@ -662,7 +636,6 @@ body {
 
 #status button + button { margin-left: -10px; }
 
-/* --- Login (inline inside .boot) --- */
 #login-box {
   display: none;
   flex-direction: column;
@@ -735,7 +708,6 @@ body {
 
 #app { display: none; flex: 1; overflow: hidden; position: relative; flex-direction: column; }
 
-/* --- Splash --- */
 #splash {
   position: fixed;
   inset: 0;
@@ -747,7 +719,6 @@ body {
   overflow: hidden;
 }
 
-/* Boot screen */
 .boot {
   display: flex;
   flex-direction: column;
@@ -779,7 +750,6 @@ body {
 }
 
 
-/* --- Context Menu --- */
 #context-menu {
   display: none;
   position: fixed;

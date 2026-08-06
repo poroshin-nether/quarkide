@@ -1,4 +1,3 @@
-// REST API — all HTTP endpoints: auth + file operations
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');

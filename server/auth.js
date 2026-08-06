@@ -1,4 +1,3 @@
-// session management — create / check / delete tokens
 const crypto = require('crypto');
 
 const sessions = new Set();

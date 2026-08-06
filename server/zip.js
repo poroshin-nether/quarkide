@@ -1,4 +1,3 @@
-// Minimal streaming ZIP writer — STORED entries only (no compression), no dependency
 const fs = require('fs').promises;
 const path = require('path');
 const zlib = require('zlib');

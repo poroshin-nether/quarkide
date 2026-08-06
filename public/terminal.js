@@ -1,4 +1,3 @@
-// terminal — xterm.js panels, WebSocket transport, tab management
 let ws = null;
 let reconnectTimer = null;
 
@@ -15,8 +14,6 @@ function wsSend(msg) {
   if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg));
 }
 
-// Visibility is a pure function of shell count. Server is the source of
-// truth for how many shells exist; the window shows iff there is at least one.
 function syncTermVisibility() {
   const show = terminals.length > 0;
   termWrap.style.display = show ? '' : 'none';
@@ -39,9 +36,6 @@ function createTermPanel(id) {
   });
   term.loadAddon(fitAddon);
 
-  // Container must be visible (and laid out) before term.open() measures it —
-  // opening into a display:none ancestor gives xterm zero-size cell metrics
-  // that a later fit() doesn't fully recover from until the next real render.
   const entry = { id, term, fitAddon, el: div };
   terminals.push(entry);
   syncTermVisibility();
@@ -51,9 +45,6 @@ function createTermPanel(id) {
   term.onData((data) => wsSend({ type: 'input', id, data }));
   term.onResize(({ cols, rows }) => wsSend({ type: 'resize', id, cols, rows }));
 
-  // Touch scroll for mobile — xterm 6 doesn't ship native touch scroll on canvas.
-  // Drag on the panel translates to viewport.scrollTop, which xterm's own scroll
-  // listener picks up and re-renders rows from scrollback.
   const viewport = div.querySelector('.xterm-viewport');
   if (viewport) {
     let startY = 0, startScroll = 0, dragging = false;
@@ -139,11 +130,7 @@ function renderTermTabs() {
 const MIN_TERM_TAB_WIDTH = 60;
 
 function canOpenMoreTerms() {
-  // The very first shell is always allowed — at that point the wrap is still
-  // hidden (visibility follows shell count), so termTabs.clientWidth would be
-  // 0 and the width check would reject the click that opens the panel.
   if (terminals.length === 0) return true;
-  // Reserve space for the "+" add button at the end
   const addBtn = termTabs.querySelector('.term-add');
   let available = termTabs.clientWidth;
   if (addBtn) available -= addBtn.offsetWidth;
@@ -180,9 +167,6 @@ function connect() {
   ws = socket;
 
   socket.onopen = () => {
-    // Fresh rebuild on every (re)connect. The server will replay its shell
-    // list via shell-created + scrollback output; disposing first avoids
-    // duplicated scrollback on existing panels after a transient disconnect.
     disposeAllTerms();
     if (firstOpenResolve) { firstOpenResolve(); firstOpenResolve = null; }
   };

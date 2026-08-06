@@ -54,7 +54,6 @@ function initSettings() {
   on($('settings-close'), 'click', closeSettings);
   on(overlay, 'click', closeSettings);
 
-  // Clamp popup within viewport (only after it's been detached from centered mode)
   function clampPopup() {
     if (popup.style.transform !== 'none') return;
     const w = popup.offsetWidth;
@@ -70,13 +69,11 @@ function initSettings() {
   window.addEventListener('resize', clampPopup);
   new ResizeObserver(clampPopup).observe(popup);
 
-  // Drag by header
   const header = popup.querySelector('.settings-popup-header');
   on(header, 'pointerdown', (e) => {
     if (e.target.closest('#settings-close')) return;
     if (e.button !== undefined && e.button !== 0) return;
 
-    // Convert from centered (top/left 50% + transform) to absolute pixels on first drag
     const rect = popup.getBoundingClientRect();
     popup.style.transform = 'none';
     popup.style.left = rect.left + 'px';
@@ -91,7 +88,6 @@ function initSettings() {
       const h = popup.offsetHeight;
       let x = ev.clientX - offsetX;
       let y = ev.clientY - offsetY;
-      // Clamp strictly within viewport
       x = Math.max(0, Math.min(window.innerWidth - w, x));
       y = Math.max(0, Math.min(window.innerHeight - h, y));
       popup.style.left = x + 'px';

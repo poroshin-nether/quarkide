@@ -1,4 +1,3 @@
-// PTY shell management + WebSocket transport
 const fs = require('fs');
 const pty = require('node-pty');
 const { WebSocketServer } = require('ws');
@@ -112,9 +111,6 @@ function handle_message(conn, ws, msg) {
   }
 
   if (msg.type == 'new-shell') {
-    // Spawn is deferred to the first resize (see below) so the PTY starts
-    // out at the client's real panel size instead of a guessed default —
-    // avoids a window where shell and client disagree on terminal width.
     const id = conn.nextId++;
     conn.shells.set(id, { pending: true, cwd: safe_cwd(msg.cwd) });
     ws.send(JSON.stringify({ type: 'shell-created', id }));
@@ -164,8 +160,6 @@ function handle_ws(ws, req) {
 
   ws.send(JSON.stringify({ type: 'platform', isWindows: IS_WIN }));
 
-  // Send all existing shells for this token (may be zero). Server no longer
-  // auto-creates a shell on empty — that's the client's decision.
   for (const [id, entry] of conn.shells) {
     ws.send(JSON.stringify({ type: 'shell-created', id }));
     if (entry.scrollback) {

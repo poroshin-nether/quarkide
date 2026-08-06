@@ -1,4 +1,3 @@
-// editor — Monaco editor, file tabs, save
 let monacoReady = false;
 let monacoEditor = null;
 let pendingTab = null;
@@ -209,7 +208,6 @@ async function restoreSession() {
   if (!raw) return;
   const data = JSON.parse(raw);
 
-  // Layout sizes (applied after initSettings/setLayout so we override defaults)
   if (data.sidebarWidth) $('sidebar').style.width = data.sidebarWidth;
   if (data.termWidth) $('terminal-wrap').style.width = data.termWidth;
   if (data.termHeight) $('terminal-wrap').style.height = data.termHeight;
@@ -233,7 +231,7 @@ function canOpenMoreTabs() {
 
 function flashTabsReject() {
   tabsEl.classList.remove('reject');
-  void tabsEl.offsetWidth; // force reflow so animation restarts if still running
+  void tabsEl.offsetWidth;
   tabsEl.classList.add('reject');
   setTimeout(() => tabsEl.classList.remove('reject'), 500);
 }

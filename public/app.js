@@ -1,4 +1,3 @@
-// --- File Tree ---
 const treeEl = $('tree');
 const currentPathEl = $('current-path');
 const driveSelectEl = $('drive-select');
@@ -13,8 +12,6 @@ async function initDrives() {
   syncDriveSelect(currentPathEl.textContent);
 }
 
-// Path text stays plain, selectable/copyable. The select is icon-only (its
-// own text is transparent) — clicking it just opens the drive list.
 function syncDriveSelect(dirPath) {
   const drive = /^[A-Za-z]:\\/.exec(dirPath);
   if (drive) driveSelectEl.value = drive[0];
@@ -49,7 +46,6 @@ async function loadDir(dirPath) {
   }
 }
 
-// --- Resizers ---
 function setupResizer(handle, dirFn, target, invert) {
   function begin(startX, startY) {
     const isH = dirFn() === 'h';
@@ -62,7 +58,6 @@ function setupResizer(handle, dirFn, target, invert) {
     };
   }
 
-  // Desktop — mouse
   on(handle, 'mousedown', (e) => {
     e.preventDefault();
     const move = begin(e.clientX, e.clientY);
@@ -76,7 +71,6 @@ function setupResizer(handle, dirFn, target, invert) {
     window.addEventListener('mouseup', onUp);
   });
 
-  // Mobile — touch
   on(handle, 'touchstart', (e) => {
     const t = e.touches[0];
     if (!t) return;
@@ -100,7 +94,6 @@ function setupResizer(handle, dirFn, target, invert) {
   }, { passive: false });
 }
 
-// --- Start app ---
 let appInited = false;
 
 async function bootCommon() {
