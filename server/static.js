@@ -13,22 +13,30 @@ const MIME = {
   '.ttf': 'font/ttf',
 };
 
+function resolve_pkg_dir(name) {
+  for (const dir of require.resolve.paths(name)) {
+    const candidate = path.join(dir, name);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  throw new Error(`cannot locate package: ${name}`);
+}
+
 const vendor_map = {
-  '/xterm.css': 'node_modules/@xterm/xterm/css/xterm.css',
-  '/xterm.js': 'node_modules/@xterm/xterm/lib/xterm.js',
-  '/xterm-addon-fit.js': 'node_modules/@xterm/addon-fit/lib/addon-fit.js',
+  '/xterm.css': path.join(resolve_pkg_dir('@xterm/xterm'), 'css', 'xterm.css'),
+  '/xterm.js': path.join(resolve_pkg_dir('@xterm/xterm'), 'lib', 'xterm.js'),
+  '/xterm-addon-fit.js': path.join(resolve_pkg_dir('@xterm/addon-fit'), 'lib', 'addon-fit.js'),
 };
 
 const project_root = path.join(__dirname, '..');
-const monaco_base = path.join(project_root, 'node_modules', 'monaco-editor', 'min');
-const themes_base = path.join(project_root, 'node_modules', 'monaco-themes', 'themes');
+const monaco_base = path.join(resolve_pkg_dir('monaco-editor'), 'min');
+const themes_base = path.join(resolve_pkg_dir('monaco-themes'), 'themes');
 
 function serve_static(req, res) {
   const url_path = req.url.split('?')[0];
   let file_path;
 
   if (vendor_map[url_path]) {
-    file_path = path.join(project_root, vendor_map[url_path]);
+    file_path = vendor_map[url_path];
   } else if (url_path.startsWith('/vs/')) {
     file_path = path.join(monaco_base, url_path);
     if (!file_path.startsWith(monaco_base + path.sep)) {
