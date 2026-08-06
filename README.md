@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/poroshin-nether/quarkide/main/assets/banner.svg" alt="quarkide" width="600">
+<img src="https://raw.githubusercontent.com/quarkide/quarkide/main/assets/banner.svg" alt="quarkide" width="600">
 
 [![npm version](https://img.shields.io/npm/v/quarkide.svg)](https://www.npmjs.com/package/quarkide)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
@@ -10,18 +10,8 @@ Full control over your own LAN — no container, no install, no config wizard.
 
 **npx / npm**
 ```bash
-npx quarkide -a your-password
+npx quarkide
 npm i -g quarkide
-```
-
-**windows**
-```powershell
-winget install quarkide
-```
-
-**macos**
-```bash
-brew install poroshin-nether/quarkide/quarkide
 ```
 
 **download**
@@ -32,9 +22,14 @@ curl -fsSL https://quarkide.com/install.sh | sh
 irm https://quarkide.com/install.ps1 | iex
 ```
 
+**macos**
+```bash
+brew install quarkide/quarkide/quarkide
+```
+
 **from source**
 ```bash
-git clone https://github.com/poroshin-nether/quarkide.git
+git clone https://github.com/quarkide/quarkide.git
 cd quarkide
 npm install
 npm start
@@ -54,12 +49,8 @@ node server/main.js [-p <port>] [-a <password>]
 | `-a` | `--auth` | generated fresh each run and printed once | Access password |
 | `-v` | `--version` | — | Print version and exit |
 
-Without `-a`, a password is generated fresh and printed once each run; pass `-a` yourself for a stable one. For a service that restarts (systemd, Task Scheduler, etc.), bake `-a`/`-p` into that service's own start command.
+Without `-a`, a password is generated fresh and printed once each run; pass `-a` yourself for a stable one.
 
 ## License
 
 [MIT](./LICENSE)
-
-## Support
-
-[Sponsoring](https://github.com/sponsors/poroshin-nether) helps keep it going — sponsors get a slot on [quarkide.com](https://quarkide.com).

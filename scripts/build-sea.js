@@ -1,7 +1,4 @@
-// Builds a single-file binary: node.exe + all app files embedded as SEA
-// assets, extracted to a temp dir and required from there on first run.
-// No bundler — the extracted tree is just real files, existing require()
-// resolution (server/, node_modules/) works completely unchanged.
+
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
@@ -46,6 +43,11 @@ const path = require('node:path');
 const os = require('node:os');
 const { createRequire } = require('node:module');
 
+if (process.argv.includes('-v') || process.argv.includes('--version')) {
+  console.log(${JSON.stringify(pkg.version)});
+  process.exit(0);
+}
+
 const extractDir = path.join(os.tmpdir(), 'quarkide-${pkg.version}');
 const marker = path.join(extractDir, '.extracted');
 
@@ -67,6 +69,7 @@ const seaConfigPath = path.join(DIST, 'sea-config.json');
 fs.writeFileSync(seaConfigPath, JSON.stringify({
   main: entryPath,
   output: path.join(DIST, 'sea-blob.blob'),
+  disableExperimentalSEAWarning: true,
   assets,
 }, null, 2));
 

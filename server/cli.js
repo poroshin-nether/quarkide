@@ -60,8 +60,7 @@ const PORT = parse_port(args.port);
 let PASSWORD = args.auth;
 if (!PASSWORD) {
   PASSWORD = crypto.randomBytes(12).toString('hex');
-  console.log(`[cli] generated password: ${PASSWORD}`);
-  console.log('[cli] not saved anywhere — pass -a to set your own, or bake this flag into how you (re)start the server');
+  console.log(`password: ${PASSWORD}`);
 }
 
 module.exports = { PORT, ROOT, PASSWORD, IS_WIN, SCROLLBACK_SIZE };
