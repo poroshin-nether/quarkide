@@ -4,7 +4,7 @@
   "description": "Terminal, file manager, and a full code editor — compiled into one binary you run from anywhere.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/poroshin-nether/quarkide.git"
+    "url": "git+https://github.com/quarkide/quarkide.git"
   },
   "homepage": "https://quarkide.com",
   "main": "server/main.js",
