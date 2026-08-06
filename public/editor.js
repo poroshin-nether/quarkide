@@ -68,7 +68,7 @@ function syncStatusFileMarquee() {
   if (statusFileAnim) { statusFileAnim.cancel(); statusFileAnim = null; }
   statusFile.style.transform = '';
   const overflow = statusFile.offsetWidth - statusLeft.clientWidth;
-  statusFileMinX = overflow > 0 ? -overflow - 24 : 0;
+  statusFileMinX = overflow > 0 ? -overflow - 48 : 0;
   if (statusFileMinX < 0) startMarqueeLoop(statusFileMinX);
 }
 syncStatusFileMarquee();
