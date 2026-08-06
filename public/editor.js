@@ -9,8 +9,107 @@ const editorEl = $('editor');
 const noFileEl = $('no-file');
 const statusFile = $('status-file');
 const statusPos = $('status-pos');
+const statusLeft = document.querySelector('.status-left');
 
 on($('save-btn'), 'click', saveFile);
+
+const MARQUEE_SPEED = 100;
+const MARQUEE_HOLD_MS = 7500;
+
+let statusFileAnim = null;
+let statusFileMinX = 0;
+
+function startMarqueeLoop(minX) {
+  if (statusFileAnim) statusFileAnim.cancel();
+  const travel = Math.abs(minX) / MARQUEE_SPEED * 1000;
+  const total = 3 * MARQUEE_HOLD_MS + 2 * travel;
+  let t = MARQUEE_HOLD_MS;
+  const keyframes = [{ transform: 'translateX(0px)', offset: 0 }];
+  keyframes.push({ transform: 'translateX(0px)', offset: t / total });
+  t += travel;
+  keyframes.push({ transform: `translateX(${minX}px)`, offset: t / total });
+  t += MARQUEE_HOLD_MS;
+  keyframes.push({ transform: `translateX(${minX}px)`, offset: t / total });
+  t += travel;
+  keyframes.push({ transform: 'translateX(0px)', offset: t / total });
+  keyframes.push({ transform: 'translateX(0px)', offset: 1 });
+
+  statusFileAnim = statusFile.animate(keyframes, {
+    duration: total,
+    iterations: Infinity,
+    easing: 'linear',
+  });
+}
+
+function settleThenLoop(fromX, minX) {
+  if (statusFileAnim) statusFileAnim.cancel();
+  const toMin = Math.abs(minX - fromX) / MARQUEE_SPEED * 1000;
+  const full = Math.abs(minX) / MARQUEE_SPEED * 1000;
+  const keyframes = [
+    { transform: `translateX(${fromX}px)`, offset: 0 },
+  ];
+  let t = MARQUEE_HOLD_MS;
+  const total = MARQUEE_HOLD_MS + toMin + MARQUEE_HOLD_MS + full + MARQUEE_HOLD_MS;
+  keyframes.push({ transform: `translateX(${fromX}px)`, offset: t / total });
+  t += toMin;
+  keyframes.push({ transform: `translateX(${minX}px)`, offset: t / total });
+  t += MARQUEE_HOLD_MS;
+  keyframes.push({ transform: `translateX(${minX}px)`, offset: t / total });
+  t += full;
+  keyframes.push({ transform: 'translateX(0px)', offset: t / total });
+  keyframes.push({ transform: 'translateX(0px)', offset: 1 });
+
+  statusFileAnim = statusFile.animate(keyframes, { duration: total, easing: 'linear' });
+  statusFileAnim.onfinish = () => startMarqueeLoop(minX);
+}
+
+function syncStatusFileMarquee() {
+  statusLeft.classList.toggle('empty', statusFile.textContent === '');
+  if (statusFileAnim) { statusFileAnim.cancel(); statusFileAnim = null; }
+  statusFile.style.transform = '';
+  const overflow = statusFile.offsetWidth - statusLeft.clientWidth;
+  statusFileMinX = overflow > 0 ? -overflow - 24 : 0;
+  if (statusFileMinX < 0) startMarqueeLoop(statusFileMinX);
+}
+syncStatusFileMarquee();
+
+let statusFileResizeTimer = null;
+on(window, 'resize', () => {
+  if (statusFileResizeTimer) clearTimeout(statusFileResizeTimer);
+  statusFileResizeTimer = setTimeout(syncStatusFileMarquee, 150);
+});
+
+let statusFileDragging = false;
+let statusFileDragStartX = 0;
+let statusFileDragStartOffset = 0;
+let statusFileDragCurrentX = 0;
+
+on(statusLeft, 'touchstart', (e) => {
+  if (statusFileMinX === 0 || e.touches.length !== 1) return;
+  statusFileDragging = true;
+  statusFileDragStartX = e.touches[0].clientX;
+  const matrix = new DOMMatrixReadOnly(getComputedStyle(statusFile).transform);
+  statusFileDragStartOffset = matrix.m41;
+  statusFileDragCurrentX = statusFileDragStartOffset;
+  if (statusFileAnim) statusFileAnim.cancel();
+  statusFile.style.transform = `translateX(${statusFileDragStartOffset}px)`;
+}, { passive: true });
+
+on(statusLeft, 'touchmove', (e) => {
+  if (!statusFileDragging) return;
+  e.preventDefault();
+  const dx = e.touches[0].clientX - statusFileDragStartX;
+  statusFileDragCurrentX = Math.max(statusFileMinX, Math.min(0, statusFileDragStartOffset + dx));
+  statusFile.style.transform = `translateX(${statusFileDragCurrentX}px)`;
+}, { passive: false });
+
+function endStatusFileDrag() {
+  if (!statusFileDragging) return;
+  statusFileDragging = false;
+  settleThenLoop(statusFileDragCurrentX, statusFileMinX);
+}
+on(statusLeft, 'touchend', endStatusFileDrag);
+on(statusLeft, 'touchcancel', endStatusFileDrag);
 
 const extToLang = {
   js: 'javascript', mjs: 'javascript', cjs: 'javascript', jsx: 'javascript',
@@ -261,6 +360,7 @@ function createEditor() {
     fontSize: settings.fontSize,
     minimap: { enabled: settings.minimap },
     columnSelection: settings.columnSelection,
+    wordWrap: settings.wordWrap ? 'on' : 'off',
     scrollBeyondLastLine: false,
     automaticLayout: true,
     tabSize: 2,
@@ -270,6 +370,7 @@ function createEditor() {
     scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 },
     glyphMargin: false,
     folding: false,
+    stickyScroll: { enabled: false },
   });
   monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => saveFile());
   monaco.editor.addKeybindingRules([
@@ -300,6 +401,7 @@ function activateTab(tab) {
   monacoEditor.updateOptions({ lineNumbersMinChars: String(tab.model.getLineCount()).length + 1 });
   statusFile.textContent = tab.path;
   statusPos.textContent = 'Ln 1, Col 1';
+  syncStatusFileMarquee();
   saveSession();
 }
 
@@ -317,6 +419,7 @@ function closeTab(tab) {
     noFileEl.style.display = 'flex';
     statusFile.textContent = '';
     statusPos.textContent = '';
+    syncStatusFileMarquee();
   }
   saveSession();
 }

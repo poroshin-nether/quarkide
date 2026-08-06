@@ -1,5 +1,5 @@
 const settings = Object.assign(
-  { minimap: true, columnSelection: false, layout: 'bottom', font: 'Consolas', fontSize: 14, theme: 'vs-dark' },
+  { minimap: true, columnSelection: false, wordWrap: false, layout: 'bottom', font: 'Consolas', fontSize: 14, theme: 'vs-dark' },
   JSON.parse(localStorage.getItem('quarkide_settings') || '{}')
 );
 
@@ -55,6 +55,7 @@ function initSettings() {
   on(overlay, 'click', closeSettings);
 
   function clampPopup() {
+    if (window.innerWidth < 768) return;
     if (popup.style.transform !== 'none') return;
     const w = popup.offsetWidth;
     const h = popup.offsetHeight;
@@ -71,6 +72,7 @@ function initSettings() {
 
   const header = popup.querySelector('.settings-popup-header');
   on(header, 'pointerdown', (e) => {
+    if (window.innerWidth < 768) return;
     if (e.target.closest('#settings-close')) return;
     if (e.button !== undefined && e.button !== 0) return;
 
@@ -156,11 +158,14 @@ function initSettings() {
     }
   }
 
-  bindToggle(['btn-minimap', 'mini-minimap'], 'minimap', (v) => {
+  bindToggle(['btn-minimap'], 'minimap', (v) => {
     if (monacoEditor) monacoEditor.updateOptions({ minimap: { enabled: v } });
   });
-  bindToggle(['btn-column-select', 'mini-column-select'], 'columnSelection', (v) => {
+  bindToggle(['btn-column-select'], 'columnSelection', (v) => {
     if (monacoEditor) monacoEditor.updateOptions({ columnSelection: v });
+  });
+  bindToggle(['btn-wordwrap', 'status-wordwrap-btn'], 'wordWrap', (v) => {
+    if (monacoEditor) monacoEditor.updateOptions({ wordWrap: v ? 'on' : 'off' });
   });
 
   const mainEl = $('main');

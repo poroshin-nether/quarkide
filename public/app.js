@@ -17,13 +17,13 @@ function syncDriveSelect(dirPath) {
   if (drive) driveSelectEl.value = drive[0];
 }
 
-async function loadDir(dirPath) {
+async function loadDir(dirPath, opts = {}) {
   const res = await authFetch('/api/ls?path=' + encodeURIComponent(dirPath));
   const data = await res.json();
   currentPathEl.textContent = data.path;
   syncDriveSelect(data.path);
   treeEl.innerHTML = '';
-  saveSession();
+  if (!opts.skipSave) saveSession();
   wsSend({ type: 'watch-dir', path: data.path });
 
   if (data.parent) {
@@ -107,7 +107,7 @@ async function bootAuthed() {
   await initTerminal();
 
   const saved = localStorage.getItem('quarkide_session');
-  await loadDir(saved ? JSON.parse(saved).dir || '' : '');
+  await loadDir(saved ? JSON.parse(saved).dir || '' : '', { skipSave: true });
   await restoreSession();
 
   if (!appInited) {
@@ -115,11 +115,58 @@ async function bootAuthed() {
 
     initDrives();
 
-    on(treeEl, 'contextmenu', openTreeContextMenu);
+    const LONG_PRESS_MS = 500;
+    const LONG_PRESS_MOVE_TOLERANCE = 10;
+    let longPressTimer = null;
+    let longPressStart = null;
+    let longPressFired = false;
+
+    on(treeEl, 'touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      longPressStart = { x: t.clientX, y: t.clientY, target: t.target };
+      longPressFired = false;
+      longPressTimer = setTimeout(() => {
+        longPressFired = true;
+        openTreeContextMenu({
+          target: longPressStart.target,
+          clientX: longPressStart.x,
+          clientY: longPressStart.y,
+          preventDefault: () => {},
+        });
+      }, LONG_PRESS_MS);
+    }, { passive: true });
+
+    on(treeEl, 'touchmove', (e) => {
+      if (!longPressTimer || !longPressStart) return;
+      const t = e.touches[0];
+      const dx = t.clientX - longPressStart.x;
+      const dy = t.clientY - longPressStart.y;
+      if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_TOLERANCE) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }, { passive: true });
+
+    const cancelLongPress = () => {
+      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    };
+    on(treeEl, 'touchend', cancelLongPress);
+    on(treeEl, 'touchcancel', cancelLongPress);
+
+    on(treeEl, 'contextmenu', (e) => {
+      if (longPressFired) { longPressFired = false; e.preventDefault(); return; }
+      openTreeContextMenu(e);
+    });
     on($('terminal'), 'contextmenu', (e) => e.preventDefault());
 
     on($('sidebar-toggle'), 'click', () => { $('app').classList.add('sidebar-hidden'); });
     on($('sidebar-open'), 'click', () => { $('app').classList.remove('sidebar-hidden'); });
+
+    on(document, 'pointerdown', (e) => {
+      if (window.innerWidth >= 768) return;
+      if (e.target.closest('#editor, #no-file')) $('app').classList.add('sidebar-hidden');
+    }, { capture: true });
 
     const mainEl = $('main');
     setupResizer($('h-resizer'), () => mainEl.classList.contains('layout-right') ? 'v' : 'h', $('terminal-wrap'), true);
