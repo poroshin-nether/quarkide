@@ -20,10 +20,39 @@ function collect(dir, base, out) {
   }
 }
 
+function collectIfExists(dir, base, out) {
+  if (fs.existsSync(dir)) collect(dir, base, out);
+}
+
+const nm = (p) => path.join(ROOT, 'node_modules', p);
+const NODE_PTY_PLATFORM = `${process.platform}-${process.arch}`;
+
 const files = [{ abs: path.join(ROOT, 'package.json'), rel: 'package.json' }];
 collect(path.join(ROOT, 'server'), 'server', files);
 collect(path.join(ROOT, 'public'), 'public', files);
-collect(path.join(ROOT, 'node_modules'), 'node_modules', files);
+
+// only embed the subset of node_modules actually touched at runtime
+// (server/static.js serves @xterm, monaco-editor/min, monaco-themes/themes;
+// server/shell.js requires node-pty and ws directly)
+collect(nm('@xterm/xterm'), 'node_modules/@xterm/xterm', files);
+collect(nm('@xterm/addon-fit'), 'node_modules/@xterm/addon-fit', files);
+collect(nm('monaco-editor/min'), 'node_modules/monaco-editor/min', files);
+collect(nm('monaco-themes/themes'), 'node_modules/monaco-themes/themes', files);
+collect(nm('ws'), 'node_modules/ws', files);
+
+files.push({ abs: nm('node-pty/package.json'), rel: 'node_modules/node-pty/package.json' });
+collect(nm('node-pty/lib'), 'node_modules/node-pty/lib', files);
+// loadNativeModule() checks build/Release, build/Debug, then prebuilds/<platform>-<arch>
+// (in that order) -- node-pty ships prebuilds for win32/darwin only; on Linux it's
+// compiled from source at npm-install time into build/Release. Embed whichever exists.
+collectIfExists(nm('node-pty/build/Release'), 'node_modules/node-pty/build/Release', files);
+collectIfExists(nm('node-pty/build/Debug'), 'node_modules/node-pty/build/Debug', files);
+collectIfExists(
+  nm(`node-pty/prebuilds/${NODE_PTY_PLATFORM}`),
+  `node_modules/node-pty/prebuilds/${NODE_PTY_PLATFORM}`,
+  files
+);
+
 console.log(`[build-sea] embedding ${files.length} files`);
 
 fs.rmSync(DIST, { recursive: true, force: true });
