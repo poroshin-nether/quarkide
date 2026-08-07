@@ -10,6 +10,7 @@ const PORT = 19080;
 const PASSWORD = 'test-pass-' + Math.random().toString(36).slice(2, 8);
 const BASE = `http://127.0.0.1:${PORT}`;
 const WS_BASE = `ws://127.0.0.1:${PORT}`;
+const SAVE_KEY = process.platform === 'darwin' ? 'Meta+s' : 'Control+s';
 
 const target = process.argv[2];
 const execPath = target && !target.endsWith('.js') ? target : process.execPath;
@@ -285,7 +286,7 @@ async function main() {
 
       await page.click('.monaco-editor');
       await page.keyboard.type('typed by headless test');
-      await page.keyboard.press('Control+s');
+      await page.keyboard.press(SAVE_KEY);
       await page.waitForSelector('#save-btn.flash', { timeout: 5000 });
 
       await page.waitForSelector('.view-line >> text=typed by headless test', { timeout: 5000 });
@@ -314,7 +315,7 @@ async function main() {
       const secondTab = page.locator('#tabs .ui-tab:has-text("second.txt")');
       await assert_eventually(async () => (await secondTab.getAttribute('class')).includes('modified'));
 
-      await page.keyboard.press('Control+s');
+      await page.keyboard.press(SAVE_KEY);
       await assert_eventually(async () => !(await secondTab.getAttribute('class')).includes('modified'));
 
       await secondTab.locator('.ui-close').click();

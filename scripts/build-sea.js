@@ -90,8 +90,14 @@ const postject = path.join(ROOT, 'node_modules', '.bin', process.platform === 'w
 const sentinel = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
 execSync(
   `"${postject}" "${outPath}" NODE_SEA_BLOB "${path.join(DIST, 'sea-blob.blob')}" --sentinel-fuse ${sentinel}` +
-  (process.platform === 'win32' ? ' --overwrite' : ''),
+  (process.platform === 'win32' ? ' --overwrite' : '') +
+  (process.platform === 'darwin' ? ' --macho-segment-name NODE_SEA' : ''),
   { stdio: 'inherit' }
 );
+
+if (process.platform === 'darwin') {
+  console.log('[build-sea] codesign ...');
+  execSync(`codesign --sign - --force "${outPath}"`, { stdio: 'inherit' });
+}
 
 console.log('[build-sea] done:', outPath);
