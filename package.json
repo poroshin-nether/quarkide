@@ -1,6 +1,6 @@
 {
   "name": "quarkide",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Terminal, file manager, and a full code editor — compiled into one binary you run from anywhere.",
   "repository": {
     "type": "git",
@@ -17,7 +17,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "node server/main.js"
+    "start": "node server/main.js",
+    "postinstall": "node scripts/fix-node-pty-perms.js"
   },
   "keywords": [
     "terminal",

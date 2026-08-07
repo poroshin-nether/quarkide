@@ -57,6 +57,7 @@ if (!fs.existsSync(marker)) {
     const dest = path.join(extractDir, ...rel.split('/'));
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, Buffer.from(sea.getAsset(rel)));
+    if (process.platform !== 'win32') { try { fs.chmodSync(dest, 0o755); } catch {} }
   }
   fs.writeFileSync(marker, '');
 }
