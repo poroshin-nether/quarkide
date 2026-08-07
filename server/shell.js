@@ -41,15 +41,25 @@ function unwatch_dir(conn) {
 const connections = new Map();
 
 function create_shell(conn, id, cwd, cols, rows) {
-  const shell = pty.spawn(IS_WIN ? 'cmd.exe' : '/bin/bash', [], {
-    name: 'xterm-256color',
-    cols: cols || 120,
-    rows: rows || 30,
-    cwd: cwd || ROOT,
-    env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
-    useConpty: true,
-    useConptyDll: true,
-  });
+  let shell;
+  try {
+    shell = pty.spawn(IS_WIN ? 'cmd.exe' : '/bin/bash', [], {
+      name: 'xterm-256color',
+      cols: cols || 120,
+      rows: rows || 30,
+      cwd: cwd || ROOT,
+      env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+      useConpty: true,
+      useConptyDll: true,
+    });
+  } catch (err) {
+    conn.shells.delete(id);
+    if (conn.ws && conn.ws.readyState === 1) {
+      conn.ws.send(JSON.stringify({ type: 'shell-exit', id, code: -1 }));
+    }
+    console.error(`[shell] ${id} failed to spawn: ${err.message}`);
+    return null;
+  }
 
   const entry = { shell, scrollback: '', mute: false };
   conn.shells.set(id, entry);
