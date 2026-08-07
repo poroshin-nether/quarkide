@@ -45,8 +45,80 @@ jobs:
           name: ${{ matrix.asset }}
           path: ${{ matrix.asset }}
 
-      - if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+  test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            method: source
+          - os: windows-latest
+            method: npm-pack
+          - os: windows-latest
+            method: binary
+            asset: quarkide-windows-x64.exe
+          - os: ubuntu-latest
+            method: source
+          - os: ubuntu-latest
+            method: npm-pack
+          - os: ubuntu-latest
+            method: binary
+            asset: quarkide-linux-x64
+          - os: macos-latest
+            method: source
+          - os: macos-latest
+            method: npm-pack
+          - os: macos-latest
+            method: binary
+            asset: quarkide-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          files: ${{ matrix.asset }}
-          generate_release_notes: ${{ matrix.os == 'ubuntu-latest' }}
+          node-version: 24
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - if: matrix.method == 'binary'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+
+      - if: matrix.method == 'binary' && runner.os != 'Windows'
+        run: chmod +x ${{ matrix.asset }}
+
+      - if: matrix.method == 'npm-pack'
+        id: pack
+        run: node tests/pack-install.js
+
+      - if: matrix.method == 'source'
+        run: node tests/run.js
+
+      - if: matrix.method == 'binary'
+        shell: bash
+        run: node tests/run.js "./${{ matrix.asset }}"
+
+      - if: matrix.method == 'npm-pack'
+        shell: bash
+        run: node tests/run.js "${{ steps.pack.outputs.path }}"
+
+  release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist-assets
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist-assets/*
+          generate_release_notes: true
